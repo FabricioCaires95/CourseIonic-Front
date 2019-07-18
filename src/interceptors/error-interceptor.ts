@@ -1,14 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx'; // IMPORTANTE: IMPORT ATUALIZADO
+import { StorageService } from '../services/storage.service';
+import { AlertController } from 'ionic-angular';
+import { e } from '@angular/core/src/render3';
+
 
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor{
 
+    constructor(
+        public storage: StorageService,
+        public alertController: AlertController){
+
+    }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        console.log("PASSOU ");
+        
         return next.handle(req)
         .catch((error, caught) => {
 
@@ -21,14 +30,84 @@ export class ErrorInterceptor implements HttpInterceptor{
             if (!errorObj.status){
                 errorObj = JSON.parse(errorObj);
             }
+            
+            switch(errorObj.status){
+                
+                case 401:
+                    this.handle401();
+                    break;
 
-            console.log("Erro no interceptor");
+                case 403: 
+                    this.handle403();
+                    break;
+
+                case 404:
+                    this.handle404();
+                    break;
+
+                default:
+                    this.handleDefaultError(errorObj);
+                    break;
+            }
+            
             console.log(errorObj)
             
             return Observable.throw(errorObj);
         }) as any;
+
+
         
     }
+
+    handle403(){
+         this.storage.setLocalUser(null);   
+    }
+
+    handle404(){
+        let alert = this.alertController.create({
+            title: 'Página não Encontrada !',
+            message: 'A pagina solicitada não existe ou está indisponível no momento',
+            enableBackdropDismiss: false,
+            buttons: [
+                {
+                    text: 'Ok'
+                }
+            ]
+        });
+        alert.present();
+    }
+
+    handle401(){
+        let alert = this.alertController.create({
+            title: 'Erro 401: falha de autenticação',
+            message: 'Email ou senha estão incorretos',
+            enableBackdropDismiss: false,
+            buttons: [
+                {
+                    text: 'Ok'
+                }
+            ]
+        });
+        alert.present();
+    }
+
+    handleDefaultError(errorObj){
+        let alert = this.alertController.create({
+            title: 'Erro ' + errorObj.status + ': ' + errorObj.error,
+            message: errorObj.message,
+            enableBackdropDismiss: false,
+            buttons: [
+                {
+                    text: 'Ok'
+                }
+            ]
+        });
+        alert.present();
+    }
+
+
+
+
 }
 
 export const ErrorInterceptorProvider = {
