@@ -52,4 +52,9 @@ export class HomePage {
    
   }
 
+  signup(){
+    console.log();
+    this.navCtrl.push('SignupPage');
+  }
+
 }
