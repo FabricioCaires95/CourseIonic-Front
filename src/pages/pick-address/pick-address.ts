@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { EnderecoDTO } from '../../models/endereco.dto';
 import { StorageService } from '../../services/storage.service';
 import { ClienteService } from '../../services/domain/cliente.service';
+import { PedidoDTO } from '../../models/pedido.dto';
+import { CartService } from '../../services/domain/cart.service';
 
 
 @IonicPage()
@@ -14,11 +16,14 @@ export class PickAddressPage {
 
   items: EnderecoDTO[];
 
+  pedido: PedidoDTO;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public storage: StorageService,
-    public clientService: ClienteService) {
+    public clientService: ClienteService,
+    public cartService: CartService) {
   }
 
   ionViewDidLoad() {
@@ -27,7 +32,17 @@ export class PickAddressPage {
       this.clientService.findByEmail(localUser.email)
         .subscribe(response => {
           
-          this.items = response['addresses'];        
+          this.items = response['addresses'];  
+
+          let cart = this.cartService.getCart();
+
+          this.pedido = {
+            client: {id: response['id']},
+            adress: null,
+            payment: null, 
+            itens: cart.items.map(x => {return {amount: x.quantidade, product: {id: x.produto.id }}})
+            
+          }      
 
         },
         error => {
@@ -42,6 +57,10 @@ export class PickAddressPage {
     
   }
 
+  nextPage(item: EnderecoDTO){
+    this.pedido.adress = {id: item.id};
+    console.log(this.pedido);
+  }
 
 
 
