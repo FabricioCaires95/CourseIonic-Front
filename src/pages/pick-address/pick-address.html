@@ -1,0 +1,22 @@
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Fechamento de pedido</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-list-header>
+      Selecione um Endereço
+    </ion-list-header>
+    <button ion-item *ngFor="let item of items">
+      <h2>{{item.street}}, {{item.houseNumber}}</h2>
+      <P>{{item.zipCode}}</P>
+      <P>{{item.city.name}}, {{item.city.state.name}}</P>
+    </button>
+  </ion-list>
+</ion-content>

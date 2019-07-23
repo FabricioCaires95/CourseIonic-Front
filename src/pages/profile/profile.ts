@@ -33,7 +33,7 @@ export class ProfilePage {
     if(localUser && localUser.email){
       this.clienteService.findByEmail(localUser.email)
         .subscribe(response => {
-          this.cliente = response;  
+          this.cliente = response as ClienteDTO;  
           //Vai no bucket da amazon verificar se tem imagem de perfil para o usuario
           this.getImageIfExistis();
 
