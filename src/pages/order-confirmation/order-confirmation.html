@@ -4,7 +4,8 @@
     <button ion-button menuToggle>
           <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Confirmação de Pedido</ion-title>
+    <ion-title *ngIf="codpedido">Pedido realizado</ion-title>
+    <ion-title *ngIf="!codpedido">Confira seu Pedido</ion-title>
   </ion-navbar>
 </ion-header>
 
